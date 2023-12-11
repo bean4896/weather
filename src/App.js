@@ -47,7 +47,6 @@ function App() {
           time: new Date().toLocaleString(),
         };
 
-        // 只有当 history 中不存在相同的查询记录时才添加
         if (!history.some((record) => record.query === newRecord.query)) {
           setHistory((prevHistory) => [...prevHistory, newRecord]);
         }
@@ -97,100 +96,98 @@ function App() {
         ></link>
       </header>
 
-      <div>
-        <div className="container">
-          <div className="search-wrapper">
-            <div className="search-box">
-              <div className="input-wrapper">
-                <input
-                  type="text"
-                  id="search"
-                  className="search-bar"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyDown={(e) =>
-                    e.key === "Enter" && performSearch(searchTerm)
-                  }
-                />
-                <label htmlFor="search" className="placeholder-label">
-                  Country
-                </label>
-              </div>
-              <div className="search-btn" onClick={performSearch}>
-                <i className="bx bx-search"></i>
-              </div>
+      <div className="container">
+        <div className="search-wrapper">
+          <div className="search-box">
+            <div className="input-wrapper">
+              <input
+                type="text"
+                id="search"
+                className="search-bar"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && performSearch(searchTerm)
+                }
+              />
+              <label htmlFor="search" className="placeholder-label">
+                Country
+              </label>
+            </div>
+            <div className="search-btn" onClick={performSearch}>
+              <i className="bx bx-search"></i>
             </div>
           </div>
+        </div>
 
-          <div className="weather-container">
-            <div className="weather-wrapper">
-              {hasSearched ? (
-                isLoading ? (
-                  <div className="loading-container">
-                    <div className="loading">Loading</div>
+        <div className="weather-container">
+          <div className="weather-wrapper">
+            {hasSearched ? (
+              isLoading ? (
+                <div className="loading-container">
+                  <div className="loading">Loading</div>
+                </div>
+              ) : errorMessage ? (
+                <div className="error-container">
+                  <div id="error">{errorMessage}</div>
+                </div>
+              ) : (
+                <div className="weather-info">
+                  <div className="weather-content">
+                    <div className="title">Today's Weather</div>
+                    <div className="cloud-contain">{weatherImg}</div>
                   </div>
-                ) : errorMessage ? (
-                  <div className="error-container">
-                    <div id="error">{errorMessage}</div>
-                  </div>
-                ) : (
-                  <div className="weather-info">
-                    <div className="weather-content">
-                      <div className="title">Today's Weather</div>
-                      <div className="cloud-contain">{weatherImg}</div>
-                    </div>
 
-                    <div className="temp">{weatherData.temp}</div>
-                    <div className="temp-gap">{weatherData.tempGap}</div>
-                    <div className="other-info">
-                      <div id="info-text1">{weatherData.name}</div>
-                      <div id="info-text2">{weatherData.description}</div>
-                      <div id="info-text3">{weatherData.humidity}</div>
-                      <div id="info-text4">{weatherData.sunrise}</div>
-                    </div>
+                  <div className="temp">{weatherData.temp}</div>
+                  <div className="temp-gap">{weatherData.tempGap}</div>
+                  <div className="other-info">
+                    <div id="info-text1">{weatherData.name}</div>
+                    <div id="info-text2">{weatherData.description}</div>
+                    <div id="info-text3">{weatherData.humidity}</div>
+                    <div id="info-text4">{weatherData.sunrise}</div>
                   </div>
-                )
-              ) : null}
+                </div>
+              )
+            ) : null}
 
-              <div className="history-container">
-                <div>Search history</div>
-                {history.length === 0 ? (
-                  <div className="record">No Record</div>
-                ) : (
-                  <table>
-                    <tbody>
-                      {history.map((item, index) => (
-                        <div className="history-row">
-                          <tr key={index} className="tr-container">
-                            <div className="left">
-                              <td>{item.query}</td>
-                            </div>
-                            <div className="right">
-                              <td>{item.time}</td>
-                              <td>
-                                <button
-                                  className="iconBtn"
-                                  onClick={() => searchFromHistory(item.query)}
-                                >
-                                  <i className="bx bx-search"></i>{" "}
-                                </button>
-                              </td>
-                              <td>
-                                <button
-                                  className="iconBtn"
-                                  onClick={() => deleteFromHistory(index)}
-                                >
-                                  <i className="bx bx-trash"></i>{" "}
-                                </button>
-                              </td>
-                            </div>
-                          </tr>
-                        </div>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </div>
+            <div className="history-container">
+              <div>Search history</div>
+              {history.length === 0 ? (
+                <div className="record">No Record</div>
+              ) : (
+                <table>
+                  <tbody>
+                    {history.map((item, index) => (
+                      <div className="history-row">
+                        <tr key={index} className="tr-container">
+                          <div className="left">
+                            <td>{item.query}</td>
+                          </div>
+                          <div className="right">
+                            <td>{item.time}</td>
+                            <td>
+                              <button
+                                className="iconBtn"
+                                onClick={() => searchFromHistory(item.query)}
+                              >
+                                <i className="bx bx-search"></i>{" "}
+                              </button>
+                            </td>
+                            <td>
+                              <button
+                                className="iconBtn"
+                                onClick={() => deleteFromHistory(index)}
+                              >
+                                <i className="bx bx-trash"></i>{" "}
+                              </button>
+                            </td>
+                          </div>
+                        </tr>
+                      </div>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
         </div>
