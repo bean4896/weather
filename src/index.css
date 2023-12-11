@@ -1,6 +1,8 @@
 body {
-  background: url('../public/bg-light.png');
+  background: url("../public/bg-light.png");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
+  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
 }
