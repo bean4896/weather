@@ -110,7 +110,7 @@ input:focus {
 
 .cloud-contain {
   position: absolute;
-  top: -25%;
+  top: -80px;
   right: 0;
 }
 
@@ -133,6 +133,7 @@ input:focus {
 .search-btn {
   z-index: 2;
 }
+
 .loading-container {
   margin-top: 20px;
   display: flex;
@@ -148,6 +149,45 @@ input:focus {
   -webkit-backdrop-filter: blur(4px);
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+table {
+  width: 100%;
+}
+
+.iconBtn {
+  padding: 10px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.history-row {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.4);
+  padding: 10px;
+  margin: 10px 0px;
+}
+
+.tr-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+td {
+  padding: 0px 5px;
+}
+
+.right {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 @media (max-width: 500px) {

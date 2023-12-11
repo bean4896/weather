@@ -27,33 +27,37 @@ function App() {
       alt="weatherImg"
     />
   );
-
-  const performSearch = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const performSearch = (query) => {
     setHasSearched(true);
     setIsLoading(true);
-    const query = document.getElementById("search").value;
-    const searchTerm = document.querySelector("#search").value;
+
     fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${searchTerm}&appid=b43eaa8e92d8de618a731658c86573ca`
+      `https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=b43eaa8e92d8de618a731658c86573ca`
     )
       .then((response) => response.json())
       .then((data) => {
         setIsLoading(false);
         updateWeatherInfo(data);
         setErrorMessage("");
-        console.log(data);
         setWeatherDescription(data.weather[0].description.toLowerCase());
-        setHistory([
-          ...history,
-          { query: query, time: new Date().toLocaleString() },
-        ]);
+
+        const newRecord = {
+          query: data.name + ", " + data.sys.country,
+          time: new Date().toLocaleString(),
+        };
+
+        // 只有当 history 中不存在相同的查询记录时才添加
+        if (!history.some((record) => record.query === newRecord.query)) {
+          setHistory((prevHistory) => [...prevHistory, newRecord]);
+        }
       })
       .catch((error) => {
         console.error("Error:", error);
-        setErrorMessage("Pls enter a valid country or city");
+        setErrorMessage("Please enter a valid country or city");
+        setIsLoading(false);
       });
   };
-
   const deleteFromHistory = (index) => {
     setHistory(history.filter((_, i) => i !== index));
   };
@@ -61,7 +65,7 @@ function App() {
   const searchFromHistory = (query) => {
     performSearch(query);
   };
-  
+
   function updateWeatherInfo(data) {
     setWeatherData({
       temp: Math.round(data.main.temp - 273.15) + "°",
@@ -102,7 +106,11 @@ function App() {
                   type="text"
                   id="search"
                   className="search-bar"
-                  onKeyDown={(e) => e.key === "Enter" && performSearch()}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" && performSearch(searchTerm)
+                  }
                 />
                 <label htmlFor="search" className="placeholder-label">
                   Country
@@ -146,24 +154,42 @@ function App() {
 
               <div className="history-container">
                 <div>Search history</div>
-                <table>
-                  <tbody>
-                    {history.map((item, index) => (
-                      <tr key={index}>
-                        <td>{item.query}</td>
-                        <td>{item.time}</td>
-                        <td>
-                          <button onClick={() => searchFromHistory(item.query)}>
-                            Search
-                          </button>
-                          <button onClick={() => deleteFromHistory(index)}>
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                {history.length === 0 ? (
+                  <div className="record">No Record</div>
+                ) : (
+                  <table>
+                    <tbody>
+                      {history.map((item, index) => (
+                        <div className="history-row">
+                          <tr key={index} className="tr-container">
+                            <div className="left">
+                              <td>{item.query}</td>
+                            </div>
+                            <div className="right">
+                              <td>{item.time}</td>
+                              <td>
+                                <button
+                                  className="iconBtn"
+                                  onClick={() => searchFromHistory(item.query)}
+                                >
+                                  <i className="bx bx-search"></i>{" "}
+                                </button>
+                              </td>
+                              <td>
+                                <button
+                                  className="iconBtn"
+                                  onClick={() => deleteFromHistory(index)}
+                                >
+                                  <i className="bx bx-trash"></i>{" "}
+                                </button>
+                              </td>
+                            </div>
+                          </tr>
+                        </div>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
             </div>
           </div>
