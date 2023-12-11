@@ -4,6 +4,10 @@ import { useState } from "react";
 function App() {
   const [errorMessage, setErrorMessage] = useState("");
   const [weatherDescription, setWeatherDescription] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [history, setHistory] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [weatherData, setWeatherData] = useState({
     temp: "",
     tempGap: "",
@@ -12,11 +16,6 @@ function App() {
     humidity: "",
     sunrise: "",
   });
-
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasSearched, setHasSearched] = useState(false);
-  const [history, setHistory] = useState([]);
-
   const weatherImg = (
     <img
       className="weather-img"
@@ -27,7 +26,7 @@ function App() {
       alt="weatherImg"
     />
   );
-  const [searchTerm, setSearchTerm] = useState("");
+
   const performSearch = (query) => {
     setHasSearched(true);
     setIsLoading(true);
@@ -57,6 +56,7 @@ function App() {
         setIsLoading(false);
       });
   };
+
   const deleteFromHistory = (index) => {
     setHistory(history.filter((_, i) => i !== index));
   };
