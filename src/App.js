@@ -1,13 +1,13 @@
 import "./App.css";
-import { useState } from "react";
+import { useState, useReducer } from "react";
 
 function App() {
-  const [errorMessage, setErrorMessage] = useState("");
-  const [weatherDescription, setWeatherDescription] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasSearched, setHasSearched] = useState(false);
-  const [history, setHistory] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  // const [errorMessage, setErrorMessage] = useState("");
+  // const [weatherDescription, setWeatherDescription] = useState("");
+  // const [isLoading, setIsLoading] = useState(true);
+  // const [hasSearched, setHasSearched] = useState(false);
+  // const [history, setHistory] = useState([]);
+  // const [searchTerm, setSearchTerm] = useState("");
   const [weatherData, setWeatherData] = useState({
     temp: "",
     tempGap: "",
@@ -16,6 +16,59 @@ function App() {
     humidity: "",
     sunrise: "",
   });
+
+  const initialState = {
+    errorMessage: "",
+    weatherDescription: "",
+    isLoading: true,
+    hasSearched: false,
+    history: [],
+    searchTerm: "",
+    weatherData: {
+      temp: "",
+      tempGap: "",
+      name: "",
+      description: "",
+      humidity: "",
+      sunrise: "",
+    },
+  };
+
+  const reducer = (state, action) => {
+    switch (action.type) {
+      case "SET_ERROR_MESSAGE":
+        return { ...state, errorMessage: action.payload };
+      case "SET_WEATHER_DESCRIPTION":
+        return { ...state, weatherDescription: action.payload };
+      case "SET_IS_LOADING":
+        return { ...state, isLoading: action.payload };
+      case "SET_HAS_SEARCHED":
+        return { ...state, hasSearched: action.payload };
+      case "SET_HISTORY":
+        return { ...state, history: action.payload };
+      case "SET_SEARCH_TERM":
+        return { ...state, searchTerm: action.payload };
+      case "SET_WEATHER_DATA":
+        return { ...state, weatherData: action.payload };
+      default:
+        return state;
+    }
+  };
+
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const {
+    errorMessage,
+    weatherDescription,
+    isLoading,
+    hasSearched,
+    history,
+    searchTerm,
+  } = state;
+  // Example of dispatch usage
+  const setSearchTerm = (search) => {
+    dispatch({ type: "SET_SEARCH_TERM", payload: search });
+  };
+
   const weatherImg = (
     <img
       className="weather-img"
@@ -28,18 +81,21 @@ function App() {
   );
 
   const performSearch = (query) => {
-    setHasSearched(true);
-    setIsLoading(true);
+    dispatch({ type: "SET_HAS_SEARCHED", payload: true });
+    dispatch({ type: "SET_IS_LOADING", payload: true });
 
     fetch(
       `https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=b43eaa8e92d8de618a731658c86573ca`
     )
       .then((response) => response.json())
       .then((data) => {
-        setIsLoading(false);
+        dispatch({ type: "SET_IS_LOADING", payload: false });
         updateWeatherInfo(data);
-        setErrorMessage("");
-        setWeatherDescription(data.weather[0].description.toLowerCase());
+        dispatch({ type: "SET_ERROR_MESSAGE", payload: "" });
+        dispatch({
+          type: "SET_WEATHER_DESCRIPTION",
+          payload: data.weather[0].description.toLowerCase(),
+        });
 
         const newRecord = {
           query: data.name + ", " + data.sys.country,
@@ -47,18 +103,22 @@ function App() {
         };
 
         if (!history.some((record) => record.query === newRecord.query)) {
-          setHistory((prevHistory) => [...prevHistory, newRecord]);
+          dispatch({ type: "SET_HISTORY", payload: [...history, newRecord] });
         }
       })
+
       .catch((error) => {
         console.error("Error:", error);
-        setErrorMessage("Please enter a valid country or city");
-        setIsLoading(false);
+        dispatch({ type: "SET_ERROR_MESSAGE", payload: error.message });
+        dispatch({ type: "SET_IS_LOADING", payload: false });
       });
   };
 
   const deleteFromHistory = (index) => {
-    setHistory(history.filter((_, i) => i !== index));
+    dispatch({
+      type: "SET_HISTORY",
+      payload: history.filter((_, i) => i !== index),
+    });
   };
 
   const searchFromHistory = (query) => {
@@ -114,6 +174,7 @@ function App() {
                 Country
               </label>
             </div>
+
             <div className="search-btn" onClick={performSearch}>
               <i className="bx bx-search"></i>
             </div>
