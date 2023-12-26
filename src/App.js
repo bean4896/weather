@@ -24,14 +24,6 @@ function App() {
     hasSearched: false,
     history: [],
     searchTerm: "",
-    weatherData: {
-      temp: "",
-      tempGap: "",
-      name: "",
-      description: "",
-      humidity: "",
-      sunrise: "",
-    },
   };
 
   const reducer = (state, action) => {
@@ -56,6 +48,7 @@ function App() {
   };
 
   const [state, dispatch] = useReducer(reducer, initialState);
+
   const {
     errorMessage,
     weatherDescription,
@@ -64,6 +57,7 @@ function App() {
     history,
     searchTerm,
   } = state;
+  
   // Example of dispatch usage
   const setSearchTerm = (search) => {
     dispatch({ type: "SET_SEARCH_TERM", payload: search });
@@ -83,6 +77,7 @@ function App() {
   const performSearch = (query) => {
     dispatch({ type: "SET_HAS_SEARCHED", payload: true });
     dispatch({ type: "SET_IS_LOADING", payload: true });
+    console.log("query", query);
 
     fetch(
       `https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=b43eaa8e92d8de618a731658c86573ca`
@@ -166,16 +161,22 @@ function App() {
                 className="search-bar"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={(e) =>
-                  e.key === "Enter" && performSearch(searchTerm)
-                }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    performSearch(searchTerm);
+                  }
+                }}
               />
               <label htmlFor="search" className="placeholder-label">
                 Country
               </label>
             </div>
 
-            <div className="search-btn" onClick={performSearch}>
+            <div
+              className="search-btn"
+              onClick={() => performSearch(searchTerm)}
+            >
               <i className="bx bx-search"></i>
             </div>
           </div>
@@ -216,35 +217,29 @@ function App() {
               {history.length === 0 ? (
                 <div className="record">No Record</div>
               ) : (
-                <table>
+                <table className="history-row">
                   <tbody>
                     {history.map((item, index) => (
-                      <div className="history-row">
-                        <tr key={index} className="tr-container">
-                          <div className="left">
-                            <td>{item.query}</td>
-                          </div>
-                          <div className="right">
-                            <td>{item.time}</td>
-                            <td>
-                              <button
-                                className="iconBtn"
-                                onClick={() => searchFromHistory(item.query)}
-                              >
-                                <i className="bx bx-search"></i>{" "}
-                              </button>
-                            </td>
-                            <td>
-                              <button
-                                className="iconBtn"
-                                onClick={() => deleteFromHistory(index)}
-                              >
-                                <i className="bx bx-trash"></i>{" "}
-                              </button>
-                            </td>
-                          </div>
-                        </tr>
-                      </div>
+                      <tr className="tr-row" key={index}>
+                        <td className="left">{item.query}</td>
+                        <td>{item.time}</td>
+                        <td>
+                          <button
+                            className="iconBtn"
+                            onClick={() => searchFromHistory(item.query)}
+                          >
+                            <i className="bx bx-search"></i>{" "}
+                          </button>
+                        </td>
+                        <td>
+                          <button
+                            className="iconBtn"
+                            onClick={() => deleteFromHistory(index)}
+                          >
+                            <i className="bx bx-trash"></i>{" "}
+                          </button>
+                        </td>
+                      </tr>
                     ))}
                   </tbody>
                 </table>
